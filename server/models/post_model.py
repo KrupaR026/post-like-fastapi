@@ -1,5 +1,5 @@
 from server.database.database import Base
-from sqlalchemy import Column, String, DateTime, ForeignKey
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime
@@ -25,3 +25,4 @@ class  Post(Base):
     published_at = Column(DateTime, default=date_time())
     updated_at = Column(DateTime, default=date_time())
     user_id = Column(UUID, ForeignKey(User.id))
+    total_like = Column(Integer, default=0)

@@ -29,10 +29,13 @@ def like_the_post(like: LikeBase):
     if db_like is not None:
         return 'You have alredy like the post'
     else:
-
         db.add(new_like)
         db.commit()
-
+        total_like_column = db.query(Post.total_like).filter(Post.id == like.post_id).first()
+        count = total_like_column["total_like"]
+        count = count + 1
+        db.query(Post).filter(Post.id == like.post_id).update({'total_like': count})
+        db.commit()
         id = new_like.post_id
         return db.query(Post).filter(Post.id == id).first()
 
@@ -54,8 +57,13 @@ def count_the_like(post_id: str):
 
 @likeRouter.get('/likes_user_details/{post_id}')
 def post_details(post_id: str):
+    """post like user details
 
-    post = db.query(Like).filter(Like.post_id == post_id).all()
+    Args:
+        post_id (str): _description_
 
-    # details = (post['username'], post['time'])
-    return post
+    Returns:
+        _type_: _description_
+    """    
+    like = db.query(Like).filter(Like.post_id == post_id).all()
+    return like

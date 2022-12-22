@@ -4,7 +4,6 @@ from server.schemas.post_schemas import PostBase
 from server.models.post_model import Post
 from datetime import datetime
 
-
 postRouter = APIRouter()
 db = SessionLocal()
 
@@ -50,7 +49,33 @@ def update_post(id: str, post: PostBase):
     return {"message": "Post updated successfully"}
 
 
-@postRouter.delete("/post/{id}")
+@postRouter.get("/post", status_code=status.HTTP_404_NOT_FOUND)
+def get_all_the_post_with_like_count():
+    """get all the post with total likes and post details
+
+    Returns:
+        _type_: _description_
+    """    
+    post = db.query(Post).all()
+    return post
+
+
+
+@postRouter.get("/post/{post_id}")
+def post_and_total_like(post_id: str):
+    """get the post and total likes by specific post id
+
+    Args:
+        post_id (str): _description_
+
+    Returns:
+        _type_: _description_
+    """    
+    post = db.query(Post).filter(Post.id == post_id).first()
+    return post
+
+
+@postRouter.get("/post/{id}")
 def delete_post(id: str):
     """Delete method to delete a post by id
 
