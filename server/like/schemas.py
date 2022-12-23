@@ -1,13 +1,17 @@
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
-    """Create the schema for the User table
+
+class LikeBase(BaseModel):
+    """Create the schema for the Like table
 
     Args:
         BaseModel (_type_): _description_
     """    
+    post_id: str
+    user_id: str
     username: str
-    email: str
 
     class Config:
         orm_mode = True
+
+

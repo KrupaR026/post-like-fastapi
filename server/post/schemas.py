@@ -8,9 +8,16 @@ class PostBase(BaseModel):
     Args:
         BaseModel (_type_): _description_
     """    
-    title: Optional[str]
-    description: Optional[str]
-    user_id: Optional[str]
+    title: str
+    description: str
+    user_id: str
 
     class Config:
         orm_mode = True
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    dexcription: Optional[str] = None
+    user_id: Optional[str] = None
+
+    

@@ -1,14 +1,14 @@
-from fastapi import APIRouter, status
-from server.database.database import SessionLocal
-from server.schemas.post_schemas import PostBase
-from server.models.post_model import Post
+from fastapi import APIRouter, status, Depends
+from server.post.schemas import PostBase, PostUpdate
+from server.post.model import Post
 from datetime import datetime
+from server.database import get_db
+from sqlalchemy.orm import Session
 
 postRouter = APIRouter()
-db = SessionLocal()
 
 @postRouter.post("/post", status_code=status.HTTP_201_CREATED)
-def create_new_post(post: PostBase):
+def create_new_post(post: PostBase, db: Session = Depends(get_db)):
     """create the new post
 
     Args:
@@ -29,7 +29,7 @@ def create_new_post(post: PostBase):
 
 
 @postRouter.put("/post/{id}", status_code=status.HTTP_200_OK)
-def update_post(id: str, post: PostBase):
+def update_post(id: str, post: PostUpdate, db: Session = Depends(get_db)):
     """Edit the post by post id
 
     Args:
@@ -40,17 +40,19 @@ def update_post(id: str, post: PostBase):
         _type_: _description_
     """ 
     post_to_update = filter_query(id)
+
     post_to_update.updated_at = datetime.now()
-    post_to_update.title = (post.title,)
-    post_to_update.description = (post.description,)
-    post_to_update.user_id = (post.user_id,)
+    post_dict = post.dict(exclude_unset=True)
+
+    for key, value in post_dict.items():
+        setattr(post_to_update, key, value)
 
     db.commit()
     return {"message": "Post updated successfully"}
 
 
 @postRouter.get("/post", status_code=status.HTTP_404_NOT_FOUND)
-def get_all_the_post_with_like_count():
+def get_all_the_post_with_like_count(db: Session = Depends(get_db)):
     """get all the post with total likes and post details
 
     Returns:
@@ -62,7 +64,7 @@ def get_all_the_post_with_like_count():
 
 
 @postRouter.get("/post/{post_id}")
-def post_and_total_like(post_id: str):
+def post_and_total_like(post_id: str, db: Session = Depends(get_db)):
     """get the post and total likes by specific post id
 
     Args:
@@ -75,8 +77,8 @@ def post_and_total_like(post_id: str):
     return post
 
 
-@postRouter.get("/post/{id}")
-def delete_post(id: str):
+@postRouter.delete("/post/{id}")
+def delete_post(id: str, db: Session = Depends(get_db)):
     """Delete method to delete a post by id
 
     Args:
@@ -92,6 +94,7 @@ def delete_post(id: str):
     return {"data": post_to_delete, "message": "Post delete successfully"}
 
 
-def filter_query(id):
+def filter_query(id, db: Session = Depends(get_db)):
 
     return db.query(Post).filter(Post.id == id).first()
+

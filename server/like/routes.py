@@ -1,15 +1,15 @@
-from fastapi import APIRouter
-from server.models.post_model import Post
-from server.models.like_model import Like
-from server.database.database import SessionLocal
-from server.schemas.like_schemas import LikeBase
+from fastapi import APIRouter, Depends
+from server.post.model import Post
+from server.like.model import Like
+from server.like.schemas import LikeBase
+from server.database import get_db
+from sqlalchemy.orm import Session
 
 
 likeRouter = APIRouter()
-db = SessionLocal()
 
 @likeRouter.post('/like_the_post')
-def like_the_post(like: LikeBase):
+def like_the_post(like: LikeBase, db: Session = Depends(get_db)):
     """like the post by post id and user id
 
     Args:
@@ -21,7 +21,7 @@ def like_the_post(like: LikeBase):
     new_like = Like(
         post_id = like.post_id,
         user_id = like.user_id,
-        username = like.userrname,
+        username = like.username,
     )
 
     db_like = db.query(Like).filter(Like.user_id == like.user_id, Like.post_id == like.post_id).first()
@@ -41,7 +41,7 @@ def like_the_post(like: LikeBase):
 
 
 @likeRouter.get('/like_count/{post_id}')
-def count_the_like(post_id: str):
+def count_the_like(post_id: str, db: Session = Depends(get_db)):
     """count the total like of given post id
 
     Args:
@@ -56,7 +56,7 @@ def count_the_like(post_id: str):
 
 
 @likeRouter.get('/likes_user_details/{post_id}')
-def post_details(post_id: str):
+def post_details(post_id: str, db: Session = Depends(get_db)):
     """post like user details
 
     Args:
@@ -67,3 +67,29 @@ def post_details(post_id: str):
     """    
     like = db.query(Like).filter(Like.post_id == post_id).all()
     return like
+
+
+@likeRouter.delete('/dislike/{post_id}/{user_id}')
+def dislike_the_post(post_id: str, user_id: str, db: Session = Depends(get_db)):
+    """dislike the post using post_id and user_id
+
+    Args:
+        post_id (str): _description_
+        user_id (str): _description_
+
+    Returns:
+        _type_: _description_
+    """    
+
+    dislike = db.query(Like).filter(Like.post_id == post_id, Like.user_id == user_id).first()
+    db.delete(dislike)
+    db.commit()
+
+    total_like_column = db.query(Post.total_like).filter(Post.id == post_id).first()
+    count = total_like_column["total_like"]
+    count = count - 1
+    db.query(Post).filter(Post.id == post_id).update({'total_like': count})
+    db.commit()
+
+    post = db.query(Post).filter(Post.id == post_id).first()
+    return {"data": post, "message": "You dislike the above post"}

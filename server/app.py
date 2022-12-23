@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from server.routes.user import userRouter
-from server.routes.post import postRouter
-from server.routes.like import likeRouter
+from server.user.routes import userRouter
+from server.post.routes import postRouter
+from server.like.routes import likeRouter
 
 
 app = FastAPI()

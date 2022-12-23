@@ -1,14 +1,15 @@
-from fastapi import APIRouter, status
-from server.schemas.user_schemas import UserBase
-from server.models.user_model import User
-from server.database.database import SessionLocal
+from fastapi import APIRouter, status, Depends
+from server.user.schemas import UserBase, UserUpdate
+from server.user.model import User
 from datetime import datetime
+from server.database import get_db
+from sqlalchemy.orm import Session
 
 userRouter = APIRouter()
-db = SessionLocal()
+
 
 @userRouter.post("/user", status_code=status.HTTP_201_CREATED)
-def create_new_user(user: UserBase):
+def create_new_user(user: UserBase, db: Session = Depends(get_db)):
     """create the new user
 
     Args:
@@ -25,7 +26,7 @@ def create_new_user(user: UserBase):
 
 
 @userRouter.get("/user", status_code=status.HTTP_200_OK)
-def get_user():
+def get_user(db: Session = Depends(get_db)):
     """Get method to get the existing all the user
 
     Returns:
@@ -50,7 +51,7 @@ def get_user_by_id(id: str):
 
 
 @userRouter.put("/user/{id}", status_code=status.HTTP_200_OK)
-def update_user(id: str, user: UserBase):
+def update_user(id: str, user: UserUpdate, db: Session = Depends(get_db)):
     """Put method to update the exixting user by id
 
     Args:
@@ -61,16 +62,19 @@ def update_user(id: str, user: UserBase):
         _type_: _description_
     """    
     user_to_update = filter_query(id).first()
+
     user_to_update.updated_at = datetime.now()
-    user_to_update.username = (user.username,)
-    user_to_update.email = (user.email,)
+    data_dict = user.dict(exclude_unset=True)
+
+    for key, value in data_dict.items():
+        setattr(user_to_update, key, value)
 
     db.commit()
     return {"message": "User updated successfully"}
 
 
 @userRouter.delete("/user/{id}")
-def delete_user(id: str):
+def delete_user(id: str, db: Session = Depends(get_db)):
     """Delete method to delete a user by id
 
     Args:
@@ -86,6 +90,6 @@ def delete_user(id: str):
     return {"data": user_to_delete, "message": "User delete successfully"}
 
 
-def filter_query(id):
+def filter_query(id, db: Session = Depends(get_db)):
 
     return db.query(User).filter(User.id == id)

@@ -5,9 +5,9 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from server.models.user_model import User
-from server.models.post_model import Post
-from server.models.like_model import Like
+from server.user.model import User
+from server.post.model import Post
+from server.like.model import Like
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,7 +23,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from server.database.database import Base
+from server.database import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
