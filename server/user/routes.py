@@ -14,11 +14,8 @@ def create_new_user(user: UserBase, db: Session = Depends(get_db)):
 
     Args:
         user (UserBase): _description_
-    """    
-    new_user = User(
-        username = user.username,
-        email = user.email
-    )
+    """
+    new_user = User(username=user.username, email=user.email)
 
     db.add(new_user)
     db.commit()
@@ -31,9 +28,9 @@ def get_user(db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     users = db.query(User).all()
-    return users   
+    return users
 
 
 @userRouter.get("/user/{id}", status_code=status.HTTP_200_OK)
@@ -45,7 +42,7 @@ def get_user_by_id(id: str):
 
     Returns:
         _type_: _description_
-    """    
+    """
     user = filter_query(id).first()
     return user
 
@@ -60,7 +57,7 @@ def update_user(id: str, user: UserUpdate, db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     user_to_update = filter_query(id).first()
 
     user_to_update.updated_at = datetime.now()
@@ -82,7 +79,7 @@ def delete_user(id: str, db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     user_to_delete = filter_query(id).first()
     db.delete(user_to_delete)
     db.commit()

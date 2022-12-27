@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 
 postRouter = APIRouter()
 
+
 @postRouter.post("/post/{public_or_private}", status_code=status.HTTP_201_CREATED)
-def create_new_post(public_or_private: str, post: PostBase, db: Session = Depends(get_db)):
+def create_new_post(
+    public_or_private: str, post: PostBase, db: Session = Depends(get_db)
+):
     """create the new post
 
     Args:
@@ -16,12 +19,12 @@ def create_new_post(public_or_private: str, post: PostBase, db: Session = Depend
 
     Returns:
         _type_: _description_
-    """      
+    """
     new_post = Post(
-        title = post.title,
-        description = post.description,
-        user_id = post.user_id,
-        post_type = public_or_private
+        title=post.title,
+        description=post.description,
+        user_id=post.user_id,
+        post_type=public_or_private,
     )
     db.add(new_post)
     db.commit()
@@ -38,7 +41,7 @@ def update_post(id: str, post: PostUpdate, db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """ 
+    """
     post_to_update = filter_query(id)
 
     post_to_update.updated_at = datetime.now()
@@ -57,10 +60,9 @@ def get_all_the_post_with_like_count(db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     post = db.query(Post).all()
     return post
-
 
 
 @postRouter.get("/post/{post_id}")
@@ -72,7 +74,7 @@ def post_and_total_like(post_id: str, db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     post = db.query(Post).filter(Post.id == post_id).first()
     return post
 
@@ -86,7 +88,7 @@ def delete_post(id: str, db: Session = Depends(get_db)):
 
     Returns:
         _type_: _description_
-    """    
+    """
     post_to_delete = filter_query(id)
     db.delete(post_to_delete)
     db.commit()
@@ -97,4 +99,3 @@ def delete_post(id: str, db: Session = Depends(get_db)):
 def filter_query(id, db: Session = Depends(get_db)):
 
     return db.query(Post).filter(Post.id == id).first()
-

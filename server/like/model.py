@@ -8,6 +8,8 @@ from server.utils.util import common_db_field
 """
 create the like table
 """
+
+
 class Like(common_db_field, Base):
     __tablename__ = "like"
     post_id = Column(UUID, ForeignKey(Post.id))

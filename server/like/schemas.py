@@ -6,11 +6,10 @@ class LikeBase(BaseModel):
 
     Args:
         BaseModel (_type_): _description_
-    """    
+    """
+
     post_id: str
     user_id: str
 
     class Config:
         orm_mode = True
-
-

@@ -9,10 +9,11 @@ from server.utils.util import common_db_field
 crete the post table
 """
 
-class  Post(common_db_field, Base):
+
+class Post(common_db_field, Base):
     __tablename__ = "post"
     title = Column(String)
     description = Column(String)
     user_id = Column(UUID, ForeignKey(User.id))
-    total_like = Column(Integer, default = 0)
+    total_like = Column(Integer, default=0)
     post_type = Column(String)
