@@ -15,3 +15,4 @@ class  Post(common_db_field, Base):
     description = Column(String)
     user_id = Column(UUID, ForeignKey(User.id))
     total_like = Column(Integer, default = 0)
+    post_type = Column(String)

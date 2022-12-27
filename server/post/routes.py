@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 postRouter = APIRouter()
 
-@postRouter.post("/post", status_code=status.HTTP_201_CREATED)
-def create_new_post(post: PostBase, db: Session = Depends(get_db)):
+@postRouter.post("/post/{public_or_private}", status_code=status.HTTP_201_CREATED)
+def create_new_post(public_or_private: str, post: PostBase, db: Session = Depends(get_db)):
     """create the new post
 
     Args:
@@ -20,9 +20,9 @@ def create_new_post(post: PostBase, db: Session = Depends(get_db)):
     new_post = Post(
         title = post.title,
         description = post.description,
-        user_id = post.user_id
+        user_id = post.user_id,
+        post_type = public_or_private
     )
-
     db.add(new_post)
     db.commit()
     return {"message": "Post added successfully"}

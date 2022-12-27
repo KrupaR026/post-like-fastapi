@@ -21,23 +21,26 @@ def like_the_post(like: LikeBase, db: Session = Depends(get_db)):
     new_like = Like(
         post_id = like.post_id,
         user_id = like.user_id,
-        username = like.username,
     )
 
-    db_like = db.query(Like).filter(Like.user_id == like.user_id, Like.post_id == like.post_id).first()
-
-    if db_like is not None:
-        return 'You have alredy like the post'
+    post_type = db.query(Post.post_type).filter(Post.id == new_like.post_id).first()
+    public_or_private = post_type["post_type"]
+    if public_or_private == "private":
+        return "Sorry, This post is private. So you can't see and like it."
     else:
-        db.add(new_like)
-        db.commit()
-        total_like_column = db.query(Post.total_like).filter(Post.id == like.post_id).first()
-        count = total_like_column["total_like"]
-        count = count + 1
-        db.query(Post).filter(Post.id == like.post_id).update({'total_like': count})
-        db.commit()
-        id = new_like.post_id
-        return db.query(Post).filter(Post.id == id).first()
+        db_like = db.query(Like).filter(Like.user_id == like.user_id, Like.post_id == like.post_id).first()
+        if db_like is not None:
+            return 'You have already like the post'
+        else:
+            db.add(new_like)
+            db.commit()
+            total_like_column = db.query(Post.total_like).filter(Post.id == like.post_id).first()
+            count = total_like_column["total_like"]
+            count = count + 1
+            db.query(Post).filter(Post.id == like.post_id).update({'total_like': count})
+            db.commit()
+            id = new_like.post_id
+            return db.query(Post).filter(Post.id == id).first()
 
 
 @likeRouter.get('/like_count/{post_id}')

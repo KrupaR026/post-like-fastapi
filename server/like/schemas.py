@@ -9,7 +9,6 @@ class LikeBase(BaseModel):
     """    
     post_id: str
     user_id: str
-    username: str
 
     class Config:
         orm_mode = True
