@@ -2,10 +2,20 @@ from fastapi import APIRouter, status, Depends
 from server.user.schemas import UserBase, UserUpdate
 from server.user.model import User
 from datetime import datetime
-from server.database import get_db
+
+# from server.database import get_db
 from sqlalchemy.orm import Session
+from server.database import SessionLocal
 
 userRouter = APIRouter()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @userRouter.post("/user", status_code=status.HTTP_201_CREATED)
@@ -34,7 +44,7 @@ def get_user(db: Session = Depends(get_db)):
 
 
 @userRouter.get("/user/{id}", status_code=status.HTTP_200_OK)
-def get_user_by_id(id: str):
+def get_user_by_id(id: str, db: Session = Depends(get_db)):
     """Get method to get the particular user by id
 
     Args:
@@ -43,7 +53,7 @@ def get_user_by_id(id: str):
     Returns:
         _type_: _description_
     """
-    user = filter_query(id).first()
+    user = filter_query(db, id).first()
     return user
 
 
@@ -58,7 +68,7 @@ def update_user(id: str, user: UserUpdate, db: Session = Depends(get_db)):
     Returns:
         _type_: _description_
     """
-    user_to_update = filter_query(id).first()
+    user_to_update = filter_query(db, id).first()
 
     user_to_update.updated_at = datetime.now()
     data_dict = user.dict(exclude_unset=True)
@@ -80,13 +90,25 @@ def delete_user(id: str, db: Session = Depends(get_db)):
     Returns:
         _type_: _description_
     """
-    user_to_delete = filter_query(id).first()
+    user_to_delete = filter_query(db, id).first()
     db.delete(user_to_delete)
     db.commit()
 
     return {"data": user_to_delete, "message": "User delete successfully"}
 
 
-def filter_query(id, db: Session = Depends(get_db)):
-
+def filter_query(db, id):
     return db.query(User).filter(User.id == id)
+
+
+# @userRouter.get('/user/{id}/{value}')
+# def abc(id: str, value: str, db: Session = Depends(get_db)):
+#     user = db.query(User.username, User.email).filter(User.id == id).first()
+#     xyz = user["username"]
+#     split_f = xyz.split()
+#     # print(split_f)
+#     # for i in split_f:
+#     if value in split_f:
+#         return "present"
+
+#     return "not present"

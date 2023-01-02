@@ -19,3 +19,10 @@ class UserBase(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
+
+
+class UserName(BaseModel):
+    username: str
+
+    class Config:
+        orm_mode = True

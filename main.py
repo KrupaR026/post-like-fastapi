@@ -4,8 +4,7 @@ import uvicorn
 
 
 """
-This main file and we have to run this file and this application
-runs on uvicorn server on 8000 port.
+This is main file and we can run it on uvicorn server port 8000.
 """
 
 load_dotenv()

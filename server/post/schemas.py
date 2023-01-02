@@ -12,6 +12,8 @@ class PostBase(BaseModel):
     title: str
     description: str
     user_id: str
+    post_type: str
+    post_display_user: str
 
     class Config:
         orm_mode = True
@@ -19,5 +21,5 @@ class PostBase(BaseModel):
 
 class PostUpdate(BaseModel):
     title: Optional[str] = None
-    dexcription: Optional[str] = None
-    user_id: Optional[str] = None
+    description: Optional[str] = None
+    post_display_user: Optional[str] = None
