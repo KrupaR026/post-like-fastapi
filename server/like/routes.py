@@ -10,23 +10,6 @@ from sqlalchemy.orm import Session
 likeRouter = APIRouter()
 
 
-def db_like_function(db, like: LikeBase):
-    return (
-        db.query(Like)
-        .filter(Like.user_id == like.user_id, Like.post_id == like.post_id)
-        .first()
-    )
-
-
-def total_like_column_function(db, like: LikeBase):
-    total_like_column = (
-        db.query(Post.total_like).filter(Post.id == like.post_id).first()
-    )
-    count = total_like_column["total_like"]
-    count = count + 1
-    db.query(Post).filter(Post.id == like.post_id).update({"total_like": count})
-
-
 @likeRouter.post("/like_the_post")
 def like_the_post(like: LikeBase, db: Session = Depends(get_db)):
     """like the post by post id and user id

@@ -67,9 +67,8 @@ def get_all_the_post_with_like_count(db: Session = Depends(get_db)):
     Returns:
         _type_: _description_
     """
-    # all_post = db.query(Post).all()
+
     all_post = db.query(Post).filter(Post.post_type == "public").all()
-    # public_post = all_post
     return all_post
 
 
@@ -84,7 +83,6 @@ def post_and_total_like(post_id: str, user_id: str, db: Session = Depends(get_db
         _type_: _description_
     """
     post = filter_query(db, post_id)
-    # return post
 
     two_post_column = (
         db.query(Post.post_type, Post.post_display_user)

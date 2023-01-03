@@ -2,8 +2,6 @@ from fastapi import APIRouter, status, Depends
 from server.user.schemas import UserBase, UserUpdate
 from server.user.model import User
 from datetime import datetime
-
-# from server.database import get_db
 from sqlalchemy.orm import Session
 from server.database import SessionLocal
 
@@ -99,16 +97,3 @@ def delete_user(id: str, db: Session = Depends(get_db)):
 
 def filter_query(db, id):
     return db.query(User).filter(User.id == id)
-
-
-# @userRouter.get('/user/{id}/{value}')
-# def abc(id: str, value: str, db: Session = Depends(get_db)):
-#     user = db.query(User.username, User.email).filter(User.id == id).first()
-#     xyz = user["username"]
-#     split_f = xyz.split()
-#     # print(split_f)
-#     # for i in split_f:
-#     if value in split_f:
-#         return "present"
-
-#     return "not present"
