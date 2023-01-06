@@ -3,11 +3,7 @@ from typing import Optional
 
 
 class UserBase(BaseModel):
-    """Create the schema for the User table
-
-    Args:
-        BaseModel (_type_): _description_
-    """
+    """Create the schema for the User table"""
 
     username: str
     email: str
@@ -17,12 +13,7 @@ class UserBase(BaseModel):
 
 
 class UserUpdate(BaseModel):
+    """Create the schema for update the user"""
+
     username: Optional[str] = None
     email: Optional[str] = None
-
-
-class UserName(BaseModel):
-    username: str
-
-    class Config:
-        orm_mode = True

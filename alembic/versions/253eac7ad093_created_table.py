@@ -1,8 +1,8 @@
-"""Crete the table
+"""Created table
 
-Revision ID: e711663eb8c0
+Revision ID: 253eac7ad093
 Revises:
-Create Date: 2022-12-20 15:02:48.656462
+Create Date: 2023-01-06 10:09:23.921074
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "e711663eb8c0"
+revision = "253eac7ad093"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,23 +21,29 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("username", sa.String(), nullable=True),
-        sa.Column("email", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("is_delete", sa.Boolean(), nullable=True),
+        sa.Column("username", sa.String(), nullable=True),
+        sa.Column("email", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("username"),
     )
     op.create_table(
         "post",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("is_delete", sa.Boolean(), nullable=True),
         sa.Column("title", sa.String(), nullable=True),
         sa.Column("description", sa.String(), nullable=True),
-        sa.Column("published_at", sa.DateTime(), nullable=True),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
-        sa.Column("user_id", postgresql.UUID(), nullable=True),
+        sa.Column("total_like", sa.Integer(), nullable=True),
+        sa.Column("post_type", sa.String(), nullable=True),
+        sa.Column("post_display_user", sa.String(), nullable=True),
+        sa.Column("created_by", postgresql.UUID(), nullable=True),
+        sa.Column("updated_by", postgresql.UUID(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["user_id"],
+            ["created_by"],
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
@@ -46,16 +52,15 @@ def upgrade() -> None:
         "like",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("post_id", postgresql.UUID(), nullable=True),
-        sa.Column("user_id", postgresql.UUID(), nullable=True),
-        sa.Column("username", sa.String(), nullable=True),
-        sa.Column("time", sa.DateTime(), nullable=True),
+        sa.Column("like_by", postgresql.UUID(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["like_by"],
+            ["users.id"],
+        ),
         sa.ForeignKeyConstraint(
             ["post_id"],
             ["post.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
